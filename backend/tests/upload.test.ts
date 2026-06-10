@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createApp } from "../src/app";
 import { db } from "../src/database/connection";
 
@@ -25,25 +25,31 @@ const createTempTextFile = async (content: string) => {
     return filePath;
 };
 
+const cleanDatabase = async () => {
+    await db.raw(
+        "truncate table workspaces, demographic_records, datasets restart identity cascade"
+    );
+};
+
 describe("POST /api/upload", () => {
     const createdFiles: string[] = [];
 
     beforeEach(async () => {
-        await db("workspaces").delete();
-        await db("demographic_records").delete();
-        await db("datasets").delete();
+        await cleanDatabase();
     });
 
     afterEach(async () => {
-        await db("workspaces").delete();
-        await db("demographic_records").delete();
-        await db("datasets").delete();
+        await cleanDatabase();
 
         await Promise.all(
             createdFiles.map((filePath) => fs.rm(filePath, { force: true }))
         );
 
         createdFiles.length = 0;
+    });
+
+    afterAll(async () => {
+        await db.destroy();
     });
 
     it("streams a CSV upload, inserts valid rows, and skips invalid and duplicate rows", async () => {
