@@ -9,3 +9,7 @@ coverage
 playwright-report
 test-results
 .vscode
+tmp
+backend/tmp
+frontend/.next
+backend/dist
