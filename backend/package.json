@@ -3,15 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-"scripts": {
-  "dev": "tsx watch src/server.ts",
-  "build": "tsc -p tsconfig.build.json",
-  "start": "node dist/src/server.js",
-  "lint": "tsc --noEmit",
-  "typecheck": "tsc --noEmit",
-  "test": "vitest run",
-  "test:watch": "vitest"
-},
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/src/server.js",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate": "knex migrate:latest --knexfile knexfile.ts",
+    "db:rollback": "knex migrate:rollback --knexfile knexfile.ts",
+    "db:status": "knex migrate:status --knexfile knexfile.ts",
+    "db:seed": "knex seed:run --knexfile knexfile.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -24,6 +28,7 @@
     "@types/node": "^20.19.42",
     "@types/supertest": "^7.2.0",
     "supertest": "^7.2.2",
+    "ts-node": "^10.9.2",
     "tsx": "^4.22.4",
     "typescript": "^5.9.3",
     "vitest": "^4.1.8"
