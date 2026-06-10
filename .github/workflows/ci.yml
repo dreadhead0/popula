@@ -11,10 +11,25 @@ jobs:
     name: Quality checks
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: popula_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d popula_test"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       NODE_ENV: test
       PORT: 4000
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/popula_test
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/popula_test
       CORS_ORIGIN: http://localhost:3000
       XAI_API_KEY: ""
       XAI_MODEL: grok-4.3
@@ -32,11 +47,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run database migrations
+        run: npm run db:migrate
+
       - name: Typecheck
         run: npm run typecheck
 
       - name: Lint
         run: npm run lint
+
+      - name: Build
+        run: npm run build
 
       - name: Unit and integration tests
         run: npm run test
